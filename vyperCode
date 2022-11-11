@@ -1,20 +1,26 @@
 players: public(DynArray[address, 100])
 losers: public(DynArray[address, 100])
-odds: public(uint256)
-playersTurn: public(uint256)
+odds: uint256
+playersTurn: uint256
 creator: address
 
 @external
 def __init__():
     self.creator = msg.sender
+    self.playersTurn = 0
+    self.odds = 0
+    self.players = []
+    self.losers = []
 
 @external
 def setOdds(oneInThisMany: uint256):
+    assert oneInThisMany >= 1
     assert msg.sender == self.creator
     self.odds = oneInThisMany
 
 @external
 def addPlayer(player: address):
+    assert player != empty(address)
     assert not isALoser
     for addr in self.players:
         assert addr != player
@@ -22,6 +28,7 @@ def addPlayer(player: address):
 
 @internal
 def lose(player: address):
+    assert player != empty(address)
     self.players = []
     self.losers.append(address)
 
@@ -38,6 +45,7 @@ def play():
 
 @external
 def isALoser(person: address) -> (bool):
+    assert person != empty(address)
     for addr in self.losers:
         if addr == person:
             return True
