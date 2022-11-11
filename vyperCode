@@ -21,24 +21,25 @@ def setOdds(oneInThisMany: uint256):
 @external
 def addPlayer(player: address):
     assert player != empty(address)
-    assert not isALoser
+    for addr in self.losers:
+        assert addr != player
     for addr in self.players:
         assert addr != player
-    self.players.append(address)
+    self.players.append(player)
 
 @internal
 def lose(player: address):
     assert player != empty(address)
     self.players = []
-    self.losers.append(address)
+    self.losers.append(player)
 
-@external
+@internal
 def random() -> (uint256):
     return block.number % self.odds + 1
 
 @external
 def play():
-    if random() == 1:
+    if self.random() == 1:
         self.lose(self.players[self.playersTurn])
     else:
         self.playersTurn += 1
